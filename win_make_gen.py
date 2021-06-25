@@ -1,34 +1,32 @@
 import os, time, re
 
+
+
+# WINDOWS C / C++ MAKEFILE GENERATOR
 ##############################################################################################
 #   CONFIGURATION   #
-SEARCH_DIR = "ZZ/code/"     #Start location of the code
+SEARCH_DIR = "./"     #Start location of the code
 
 EXTERNAL_FOLDERS = []
-GLOBAL_HEADERS = ["stdint.h", "settings.hh"]
+GLOBAL_HEADERS = []
 
 # COMPILER SELECTION
-C_COMPILER = "avr-gcc"
-C_FLAGS = ["-std=c99", "-g"]
+C_COMPILER = "gcc"
+C_FLAGS = ["-std=c99", "-ggdb"]
 
-CPP_COMPILER = "avr-g++"
-CPP_FLAGS = ["-std=c++17","-g"]
+CPP_COMPILER = "g++"
+CPP_FLAGS = ["-std=c++17","-ggdb"]
 
 #LINKER SELECTION
-LINKER = "avr-gcc"
+LINKER = "g++"
 
 # FLAGS FOR BOTH LANGUAGES (and linker)  
-COMMON_FLAGS = ["-D F_CPU=16000000", "-mmcu=atmega2560"] # also used in linker
-
-
+COMMON_FLAGS = [""] # also used in linker
 
 
 OUTPUT_DIR = "Build"
 OUTPUT_NAME = "main"
 
-#AVRDUDE flags
-PROGRAMMER = "usbasp-clone"
-MCU_PART = "m2560"
 ##############################################################################################
 
 #Finds the path to a header
@@ -51,8 +49,18 @@ print("STEP[1] FIND ALL THE FILES  ")
 print("----------------------------")
 time.sleep(1)
 for dir, dirname, files in os.walk(SEARCH_DIR):
-    dir = dir.replace("\\","/")
+    if dir.find(OUTPUT_DIR) != -1:
+        continue
+    dir = dir.replace("\\","/").replace(" ", "\ ")
     for file in files:
+        
+        if file.find(" ") != -1:
+            print("----------------------------")
+            print("ERROR! FILES CANNOT HAVE SPACES IN THE NAME")
+            print("----------------------------")
+            print("INCORRECT FILE: " + dir + "/" + file)
+            exit()
+
         if file.find(".cpp") != -1 or file.find(".cc") != -1: 
             found_cpp.append( (dir,file) )
             print(file)
@@ -107,10 +115,6 @@ for header in GLOBAL_HEADERS:
 dmakefile += "\nOUTPUT_DIR := " + OUTPUT_DIR
 dmakefile += "\nOUTPUT_NAME := "+ OUTPUT_NAME
 
-#PROGRAMMER VARS
-dmakefile+="\n\nMCU_PART = " + MCU_PART
-dmakefile+="\nPROGRAMMER = " + PROGRAMMER
-
 #INLCLUDE OPTIONS FOLDERS
 dmakefile +="\n\nFOLDER_INCLUDE:= "
 for dir in found_dir + EXTERNAL_FOLDERS:
@@ -145,7 +149,7 @@ print("--------------------------------")
 time.sleep(1)
 
 #all
-dmakefile += "\nall: clean compile flash\n\n"
+dmakefile += "\nall: clean compile\n\n"
 
 #clean
 dmakefile += "\nclean:\n\
@@ -158,23 +162,11 @@ dmakefile += "\nclean:\n\
 #compile
 dmakefile += "\n\ncompile: echo_compile mkdir $(O)\n\
 \techo \"------------------------------------\"\n\
-\techo \" STEP[]: LINKING INTO ELF           \"\n\
+\techo \" STEP[]: LINKING INTO EXE           \"\n\
 \techo \"------------------------------------\"\n\
 \tsleep 2\n\
-\t$(LINKER) $(O) $(COMMON_FLAGS) -o $(OUTPUT_DIR)/$(OUTPUT_NAME).elf\n\
-\techo \"------------------------------------\"\n\
-\techo \" STEP[]: CONVERTING INTO HEX        \"\n\
-\techo \"------------------------------------\"\n\
-\tsleep 2\n\
-\tavr-objcopy -j .text -j .data -O ihex $(OUTPUT_DIR)/$(OUTPUT_NAME).elf $(OUTPUT_DIR)/$(OUTPUT_NAME).hex\n\n"
+\t$(LINKER) $(O) $(COMMON_FLAGS) -o $(OUTPUT_DIR)/$(OUTPUT_NAME).exe\n"
 
-#flash
-dmakefile += "flash : \n\
-\techo \"------------------------------------\"\n\
-\techo \" STEP[]: FLASHING TO $(MCU_PART)    \"\n\
-\techo \"------------------------------------\"\n\
-\tsleep 2\n\
-\tavrdude -p $(MCU_PART) -c $(PROGRAMMER) -U flash:w:\"$(OUTPUT_DIR)/$(OUTPUT_NAME).hex\"\n\n"
 
 #mkdir
 dmakefile += "mkdir : \n\
