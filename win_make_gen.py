@@ -12,16 +12,16 @@ GLOBAL_HEADERS = []
 
 # COMPILER SELECTION
 C_COMPILER = "gcc"
-C_FLAGS = ["-std=c99", "-ggdb"]
+C_FLAGS = ["-std=c99"]
 
 CPP_COMPILER = "g++"
-CPP_FLAGS = ["-std=c++17","-ggdb"]
+CPP_FLAGS = ["-std=c++17"]
 
 #LINKER SELECTION
 LINKER = "g++"
 
 # FLAGS FOR BOTH LANGUAGES (and linker)  
-COMMON_FLAGS = [""] # also used in linker
+COMMON_FLAGS = ["-ggdb"] # also used in linker
 
 
 OUTPUT_DIR = "Build"
