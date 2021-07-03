@@ -157,14 +157,14 @@ dmakefile += "\nclean:\n\
 \techo \" STEP[]: Cleaning Folder $(OUTPUT_DIR)     \"\n\
 \techo \"------------------------------------\"\n\
 \trm -rf $(OUTPUT_DIR)\n\
-\tsleep 2\n\n"
+\tsleep 0.5\n\n"
 
 #compile
 dmakefile += "\n\ncompile: echo_compile mkdir $(O)\n\
 \techo \"------------------------------------\"\n\
 \techo \" STEP[]: LINKING INTO EXE           \"\n\
 \techo \"------------------------------------\"\n\
-\tsleep 2\n\
+\tsleep 0.5\n\
 \t$(LINKER) $(O) $(COMMON_FLAGS) -o $(OUTPUT_DIR)/$(OUTPUT_NAME).exe\n"
 
 
@@ -177,7 +177,7 @@ dmakefile+= "echo_compile : \n\
 \techo \"------------------------------------\"\n\
 \techo \" STEP[]: COMPILING SOURCE FILES     \"\n\
 \techo \"------------------------------------\"\n\
-\tsleep 2\n\n"
+\tsleep 0.5\n\n"
 
 
 
