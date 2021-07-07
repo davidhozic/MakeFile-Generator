@@ -70,8 +70,8 @@ for dir, dirname, files in os.walk(SEARCH_DIR):
         elif file.find(".h") !=-1:
             found_head.append((dir, file))
             print(file)
-        if dir not in found_dir:
-            found_dir.append(dir)
+    if dir not in found_dir:
+        found_dir.append(dir)
 
 #STEP[] Create makefile
 print("--------------------------------")
@@ -190,8 +190,13 @@ for src in found_cpp + found_c:
     fsrc.close()
     included_headers = re.findall("#include .*", dsrc)
 
-    dmakefile += ("$(OUTPUT_DIR)/"+src[0] +"/"+ src[1]).replace(".cpp",".o").replace(".cc",".o").replace(".c",".o") + " : " + src[0] + "/" + src[1] + " "
+    dmakefile += ("$(OUTPUT_DIR)/"+src[0] +"/"+ src[1]).replace(".cpp",".o").replace(".cc",".o").replace(".c",".o") + " : " + src[0] + "/" + src[1] +  " "
 
+    for global_h in GLOBAL_HEADERS:
+        global_h = find_header_path(global_h, found_head)
+        if global_h != 0:
+            dmakefile += global_h + " "
+            
     for included_h in included_headers:
         included_h = find_header_path(included_h.replace("#include","").replace("\"","").replace("<","").replace(">",""), found_head)
 
