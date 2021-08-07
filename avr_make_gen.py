@@ -137,11 +137,8 @@ for dir in found_dir:
 dmakefile += "\n\n"
 
 #O
-dmakefile += "\nO :="
-for o in found_c + found_cpp:
-    o_files.append(  ("$(OUTPUT_DIR)/" + o[0]+ "/" +o[1]).replace(".cpp",".o").replace(".cc",".o").replace(".c",".o") )
-    dmakefile +=  "\\\n"  + o_files[len(o_files)-1]
-dmakefile += "\n\n"
+dmakefile += "\nO := $(patsubst  %.cpp,$(OUTPUT_DIR)/%.o,$(CPP))\\\n\
+	 $(patsubst  %.c,$(OUTPUT_DIR)/%.o,$(C))"
 
 print("--------------------------------")
 print("  STEP[4] CREATE TARGETS        ")
